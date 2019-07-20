@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+%additional usepackages
+\usepackage{amsmath}
+\usepackage{eufrak}
+\usepackage{tikz}
+\usepackage{ amssymb }
+\usepackage{import}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{booktabs}
+\usepackage[capposition=top]{floatrow}
+\usepackage{scrextend}
+\usepackage{csquotes}
+
+% bibliography
+\usepackage{biblatex}
+\addbibresource{soda.bib}
+
+
+% margins
+\usepackage[margin=1.05in]{geometry}
+
+%new commands
+\newcommand{\ances}{AN_{A}^{\mathcal{G}}}
+\newcommand{\anc}{\mathbf{AN}^{\mathcal{G}}}
+\newcommand{\dec}{\mathbf{DE}^{\mathcal{G}}}
+\newcommand{\dsep}{\text{ \textit{d}-sep }}
+\newcommand{\dseperation}{\text{ \textit{d}-seperation}}
+\newcommand{\nodes}{\mathbf{V}}
+\newcommand{\parents}{\mathbf{PA}^{\mathcal{G}}}
+\newcommand{\parentsNew}{\mathbf{PA}^{\mathcal{G^{*}}}}
+\newcommand{\summ}{\frac{1}{n}\sum_{i=1}^{n}}
+
+
+\newcommand{\children}{\mathbf{CH}^{\mathcal{G}}}
+
+\newcommand{\graph}{\mathfrak{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\lra}{\Leftrightarrow}
+
+\newcommand{\la}{\leftarrow}
+\newcommand{\ra}{\rightarrow}
+
+\newcommand{\rp}{\right)}
+\newcommand{\lp}{\left(}
+
+%%%% INDEPDENT SIGN %%%%
+
+\makeatletter
+% Taken from http://ctan.org/pkg/centernot
+\newcommand*{\centernot}{%
+  \mathpalette\@centernot
+}
+\def\@centernot#1#2{%
+  \mathrel{%
+    \rlap{%
+      \settowidth\dimen@{$\m@th#1{#2}$}%
+      \kern.5\dimen@
+      \settowidth\dimen@{$\m@th#1=$}%
+      \kern-.5\dimen@
+      $\m@th#1\not$%
+    }%
+    {#2}%
+  }%
+}
+\makeatother
+
+\newcommand{\independent}{\perp\mkern-9.5mu\perp}
+\newcommand{\notindependent}{\centernot{\independent}}
+
+%%%%% INDEPENDENT SIGN END %%%%%
+
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Ls}{\mathbf{L}}
+\newcommand{\D}{\mathbf{D}}
+\newcommand{\W}{\mathbf{W}}
+
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\ls}{\mathbf{l}}
+\newcommand{\ds}{\mathbf{d}}
+\newcommand{\w}{\mathbf{w}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.25cm}
+
+\title{Commitment Paper: Reinforcement Learning for Stock Picking}
+\author{Jeppe S. Johansen (pcv439)}
+\date{May 2019}
+
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+In finance CAPM is one of the pillars of modern stock picking and portfolio composition. CAPM is based on the idea that a single covariance matrix $\Omega$ and mean vector $\mu$ is the structural model generating individual returns of stocks. In this view all return are $i.i.d$, and both $\mu$ and $\Omega$ can be reliably estimated due to classical results from finance. However it’s a very strong assumption to assume, that something that obviously must a time series (the returns of a stock $r_t, r_{t+1}, r_{t+2},  \cdots $), should not have any time dependency, and that $\mu$ and $\Omega$, cannot change over time.
+
+Simultanously has statistical learning (commonly referred to as AI) had great progress in control problems in the form of reinforcement learning. Reinforcement learning has been famous for getting to super human levels in ATARI games, Chess, Go (Ancient board game, which is considerably harder than most other games from a computational view point), star craft, etc. In other words, reinforcement learning have shown itself capable of creating effective strategies in difficult environments.
+
+In this paper i will try to assume a data generating process with the following properties:
+
+\begin{align}
+  \psi_t &\sim Bernoulli(k) \\
+  \mu_t &:=
+  \begin{cases}
+    \mu_{t-1} & \psi_t = 0 \\
+    \mu_t \sim d_{\mu} & \psi_t =1
+  \end{cases} \\
+  \Omega_t &:=
+  \begin{cases}
+    \Omega_{t-1} & \psi_t = 1 \\
+    \Omega \sim d_{\Omega} & \psi_t = 0
+  \end{cases} \\
+  r_t &\sim N(\mu_t , \Omega_t)
+\end{align}
+
+More intuitively this can be understood as, at each time step i assume that the with some probability (denoted $k$ in the equation) a structural break can occur. such a break will imply, that the a new $\mu$ and $\Omega$ will be drawn, and essence the returns $r_t$ will now be drawn from a reparametrized distribution.
+
+Assuming the DGP described above, i will set out to train an actor-critic network model, to do stock picking i.e. train a model, that can each time $t$ picks a single stock to invest assets in, with the objective to maximize the expected long term value of the assets.
+
+This will be done first by doing a simulation study with the proposed  DGP, and the in the end taking the model to real data, looking at daily returns of 10 stocks for a  period of +20 years.
+
+\end{document}

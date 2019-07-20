@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+%additional usepackages
+\usepackage{amsmath}
+\usepackage{eufrak}
+\usepackage{tikz}
+\usepackage{ amssymb }
+\usepackage{import}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{booktabs}
+\usepackage[capposition=top]{floatrow}
+\usepackage{scrextend}
+\usepackage{csquotes}
+
+% bibliography
+\usepackage{biblatex}
+%\addbibresource{soda.bib}
+
+
+% margins
+\usepackage[margin=1.05in]{geometry}
+
+%new commands
+\newcommand{\ances}{AN_{A}^{\mathcal{G}}}
+\newcommand{\anc}{\mathbf{AN}^{\mathcal{G}}}
+\newcommand{\dec}{\mathbf{DE}^{\mathcal{G}}}
+\newcommand{\dsep}{\text{ \textit{d}-sep }}
+\newcommand{\dseperation}{\text{ \textit{d}-seperation}}
+\newcommand{\nodes}{\mathbf{V}}
+\newcommand{\parents}{\mathbf{PA}^{\mathcal{G}}}
+\newcommand{\parentsNew}{\mathbf{PA}^{\mathcal{G^{*}}}}
+\newcommand{\summ}{\frac{1}{n}\sum_{i=1}^{n}}
+
+
+\newcommand{\children}{\mathbf{CH}^{\mathcal{G}}}
+
+\newcommand{\graph}{\mathfrak{C}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\lra}{\Leftrightarrow}
+
+\newcommand{\la}{\leftarrow}
+\newcommand{\ra}{\rightarrow}
+
+\newcommand{\rp}{\right)}
+\newcommand{\lp}{\left(}
+
+%%%% INDEPDENT SIGN %%%%
+
+\makeatletter
+% Taken from http://ctan.org/pkg/centernot
+\newcommand*{\centernot}{%
+  \mathpalette\@centernot
+}
+\def\@centernot#1#2{%
+  \mathrel{%
+    \rlap{%
+      \settowidth\dimen@{$\m@th#1{#2}$}%
+      \kern.5\dimen@
+      \settowidth\dimen@{$\m@th#1=$}%
+      \kern-.5\dimen@
+      $\m@th#1\not$%
+    }%
+    {#2}%
+  }%
+}
+\makeatother
+
+\newcommand{\independent}{\perp\mkern-9.5mu\perp}
+\newcommand{\notindependent}{\centernot{\independent}}
+
+%%%%% INDEPENDENT SIGN END %%%%%
+
+\newcommand{\X}{\mathbf{X}}
+\newcommand{\Ls}{\mathbf{L}}
+\newcommand{\D}{\mathbf{D}}
+\newcommand{\W}{\mathbf{W}}
+
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\ls}{\mathbf{l}}
+\newcommand{\ds}{\mathbf{d}}
+\newcommand{\w}{\mathbf{w}}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.25cm}
+
+\title{Structural breaks in the data generating process \& CAPM}
+\author{Jeppe S. Johansen (pcv439)}
+\date{May 2019}
+
+\makeindex
+
+\begin{document}
+
+NOTE:
+
+\begin{enumerate}
+  \item Introduction (1-2 pages)
+  \item Theory section (3 pages)
+  \item Data section (3 pages)
+  \item Analysis section (6 pages)
+  \item Discussion and conclusion
+\end{enumerate}
+
+\maketitle
+
+%\input{chapters/abstract.tex}
+%\tableofcontents
+
+\pagebreak
+
+\input{chapters/data.tex}
+
+\newpage
+%\printbibliography
+
+\end{document}

@@ -102,3 +102,19 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# .DS_store files
+*.DS_Store
+
+# Latex stuff
+*.synctex.gz
+*.toc
+*.fls
+*.fdb_latexmk
+*.aux
+*.idx
+*.ilg
+*.ind
+
+# * pickle files, should not ruin git
+*.pickle
