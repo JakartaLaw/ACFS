@@ -118,3 +118,7 @@ venv.bak/
 
 # * pickle files, should not ruin git
 *.pickle
+
+# Things to ignore
+*/feedback
+*/data
