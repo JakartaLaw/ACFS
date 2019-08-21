@@ -1,0 +1,71 @@
+\section{Algorithms}
+
+As mentioned earlier in this paper we investigate stock picking, by investing all assets in the single stock which yields highest Sharpe ratio at time $t$. Our ensemble of algorithms should therefore predict the Sharpe ratio for individual stocks.
+
+For a given set of data: $\rr^{(t)} = (r_1^{(t)}, r_2^{(t)}, \cdots, r_k^{(t)})$, predict the sharp ratio: $f(\rr^{(t)}) = \mathbf{sr}^{(t)} = (sr_1^{(t)}, sr_2^{(t)}, \cdots, sr_k^{(t)}$), choose weights such that only $max$ of the Sharpe ratio is 1:
+$\w^{(t)} = (0, 0, \cdots,0, 1, 0, \cdots, 0)$ which can be described by equation \ref{eq:maxsharp}.
+
+
+\begin{equation}\label{eq:maxsharp}
+    w_i^{(t)} =
+    \begin{cases}
+    1, &\text{if } \max({\mathbf{sr}^{(t)}}) = sr_i^{(t)} \\
+    0, &\text{else}
+    \end{cases}
+\end{equation}.
+
+\subsection{LSTM}
+
+An LSTM (Long Short Term Memory) model is a deep neural network model that has proved itself extremely effective at explaining time series. Before delving into the inner workings of an LSTM it is useful to first present some general concepts of deep learning. Deep learning is a term used for deep neural networks. A neural network is an algorithm that has shown itself capable of representing extremely flexible functional forms. The network consists of layers: \textit{input layer, hidden layers, output layer}. Each layer consists of a number of units. The input layer takes some data input. The hidden layer makes a non linear transformation of these inputs. There can be multiple hidden layers, such that a hidden layer takes the output of a previous hidden layer as input. Lastly an output layer maps the hidden layers to some target. These deep neural networks usually contains many thousands (and in some cases millions) of parameters, these being biases and weights of the inputs to different units in the layers. These parameters are tuned by using a gradient descent algorithm. This can be done because the network is differentiable, and so it's possible to establish a loss function between the predicted target and the real target, that can be differentiated with respect to the parameters.
+
+A special case of deep neural networks are recurrent neural networks. These networks are made for time series problems, where the input of the network in period $t$, is the output of the network in period $t-1$. LSTM models are subset of recurrent neural networks. LSTM models utilizes leaky units which is a way to represent longterm dependencies:
+
+\begin{displayquote}
+
+Leaky units allow the network to \textit{accumulate} information (such as evidence for a particular feature or category) over a long duration. Once that information has been used, however, it might be useful for the neural network to forget the old state. For example, if a sequence is made of subsequences and we want a leaky unit to accumulate evidence inside each sub-subsequence, we need a mechanism to forget the old state by setting it to zero. Instead of manually deciding when to clear the state, we want the neural network to learn to decide when to do it. This is what gated RNNs do \cite{goodfellow_deep_2016}.
+\end{displayquote}
+
+LSTM models contains cells of four different units: \textit{state unit, input gate, forget gate, output gate}. The \textit{state unit} represents the state of the network (or some part of the network) at period $t$. This cell has an internal recurrence. The \textit{forget gate} controls how this state evolves. This is done by controlling how much of the input should be transferred (or rather forgot) to the next state. The \textit{input gate} controls how much information should be accumulated into the current state. The \textit{output gate} controls how much of the state should be transferred forward. Figure \ref{fig:lstmcell} in the appendix show a representation of the cell.
+
+\subsubsection{Architecture of network}
+
+In this paper I have chosen a fairly standard LSTM architecture of a single LSTM layer with 256 outputs, and an output layer with 11 outputs, which represents the Sharpe ratios of the individual stocks. The input layer takes the returns for the individual stocks. The LSTM contains $277259$ trainable parameters. I train the network on sequences of length $250$. That is I sample sequences of $250$ consecutive observations from the simulated data, which the network can be trained on. I use \textit{mean squared error} (mse)\footnote{Equation \ref{eq:meansquarederror} shows how mean squared error is calculated} as the loss metric, where I let the network warm up for the first 50 observations in each sequence. Warming up implies not calculating the loss for the first 50 observations until the network has had time to represent the state of the system.
+
+\subsection{Rolling Sharpe (Naive)}
+
+The LSTM is a very complex algorithm, which even though they have proven themselves extremely effective at predicting difficult time series patterns, they have a tendency to be hard to train. To accommodate this challenge i propose this simpler algorithm.
+
+Essentially this works by calculating the rolling Sharpe ratio for period of time for each stock, and using this as the prediction of the sharpe ratio. So for a given stock $s_i$ in period $t$ calculate the $\E[R_{i}^{(t)}]$ and $\std({R_{i}^{(t)}})$. And calculate the sharpe ratio by $(\E[R_{i}^{(t)}] - \bar{r}) / \std({R_{i}^{(t)}})$. Note that $\E[R_{i}^{(t)}] - \bar{r} = \E[R_{i}^{(t)} -\bar{r}^{(t)}]$ because $\bar{r}$ is constant throughout the period. The expectation and standard deviation is calculated as presented in equation \ref{eq:rs_mean_naive} and equation \ref{eq:rs_std_naive}.
+
+\begin{equation}\label{eq:rs_mean_naive}
+    \E[R_{i}^{(t)}] = \frac{1}{h}\sum_{i=0}^{h} r_{i}^{(t-i)}
+\end{equation}
+
+\begin{equation}\label{eq:rs_std_naive}
+    \std (R_{i}^{(t)})  = \sqrt{\frac{1}{h}\sum_{i=0}^{h} \lp r_{i}^{(t-i)} - \E[R_{i}^{(t)}] \rp^{2}}
+\end{equation}
+
+where $h$ denotes the window length / the length of the memory of the algorithm. This hyper parameter $h$ can be tuned to get the best possible prediction of the Sharpe ratio.
+
+This is called naive because this algorithm does not take structural breaks into account. Or in other words, this algorithm cannot forget its previous state even if it would be advantageous.
+
+\subsection{Rolling Sharpe}
+
+An extension to the naive approach is proposed to address the issue of the algorithm not being able to forget the previous state of the system, given a structural break happens.
+
+Now consider we calculate the rolling Sharpe ratio as done above, but with the caveat it is now done for two different time periods, long term rolling Sharpe ratio and a short term rolling Sharpe ratio. In each period $t$ the algorithm stores to vectors of Sharpe ratios:
+
+\begin{align}
+    \mathbf{sr}^{(t)}_{\text{short term}} &= \lp \tilde{sr}_1^{(t)}, \tilde{sr}_2^{(t)}, \cdots , \tilde{sr}_k^{(t)}\rp \\
+    \mathbf{sr}^{(t)}_{\text{long term}} &= \lp sr_1^{(t)}, sr_2^{(t)}, \cdots , sr_k^{(t)}\rp
+\end{align}
+
+where $\tilde{sr}$ is used to denote a sharpe ratio from the short term memory. A metrix can now be used to establish if the vectors $ \mathbf{sr}^{(t)}_{\text{short term}}$,  $ \mathbf{sr}^{(t)}_{\text{long term}}$ deviates to much. If it is the case they deviate to much, the long term memory is cleared and replaced  with the short term memory. The metric for this deviation of long and short term memory is calculated by equation \ref{eq:rs_distance}
+
+\begin{equation}\label{eq:rs_distance}
+    \text{Distance}_{sr^{(t)}} = \frac{1}{k}\sum_{i=1}^{k} \lp sr^{(t)}_{i} - \tilde{sr}^{(t)}_{i} \rp^{2}
+\end{equation}
+
+This algorithm has three hyper parameters: $h_{\text{long term}}$, $h_{\text{short term}}$, and lastly $\tau$, which is the threshold for the $\text{Distance}_{sr^{(t)}}$ where the long term memory of the algorithm is cleared.
+
+The sharpe ratio is predicted using the long term memory the same way it was done for the naive version.

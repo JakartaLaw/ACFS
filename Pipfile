@@ -20,6 +20,9 @@ requests-ftp = "*"
 wrapt = "*"
 pandas-datareader = "*"
 scikit-learn = "*"
+tensorflow = "*"
+dateutils = "*"
+marshmallow = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,0 +1,88 @@
+\section{The model}\label{sec:model}
+
+Before investigating the model in more depth some elaboration of the notation used in this paper: $\Omega$ is used to denote covariance matrices, with individual elements of $\Omega$ denoted $\sigma^{2}_{i,j}$, and noting that the variances are the diagonal of the matrix, these being denoted = $\sigma^{2}_{i,i} = \sigma^{2}_{i}$. Moving on,  $\mu = (\mu_1, \mu_2, \cdots \mu_{k})$ is used for denoting a vector of $k$ expected returns. It should be noted that $\Omega$ is a $k\times k$ matrix, or rather the length $\mu$ should correspond to the size of the symmetric covariance matrix. The returns at time $t$ are denoted as $\rr^{(t)} = (r_1^{(t)}, r_2^{(t)}, \cdots, r_k^{(t)})$. In general the stochastic variables will be upper case, and the realization will be denoted in lower case. such that $\RR^{(t)}$ is a stochastic vector, and $\rr^{(t)}$ is vector of realized returns. Let $\bar{r}$ denote the risk free asset, and let $\ones$ denote a vector of 1's of length $k$). Sharpe ratio is denoted $sr$. Vectors will be denoted in bold when possible.
+
+\subsection{CAPM}
+
+As alluded to in the introduction, in CAPM it's assumed that the returns of stocks are drawn $i.i.d$ from an multivariate distribution with fixed mean $\mu$ and covariance matrix $\Omega$. Assuming that the returns are normally distributed the structural model driving the data generating process can be summed up into a single equation:
+
+\begin{equation}
+    \RR^{(t)} \sim N(\mu, \Omega)
+\end{equation}
+
+\subsection{Model formulation with structural breaks}
+
+As alluded to in chapter \ref{sec:data}, the assumption, that a single covariance matrix and expected returns can represent the data generating process seems very unlikely. There are in general two approaches to this problem:
+
+\begin{enumerate}
+    \item Assuming the covariance matrix and expected returns steadily moves over time, something akin to a AR process.
+    \item Assuming in each period with a certain probability a structural break will occur, and this will generate a vector of expected returns vector and a covariance matrix.
+\end{enumerate}
+
+In this paper the ladder option is investigated. This leads to the following structural model:
+
+First a variable $b^{(t)}\in \{0,1\}$ is drawn which represent a structural break. If $b=1$ a structural break is assumed. The parameter $p$ in equation \ref{eq:structuralbreak} denotes the probability of a structural break.
+
+\begin{equation}\label{eq:structuralbreak}
+    b^{(t)} = bern(p)
+\end{equation}
+
+If $b = 1$ a new covariance matrix, and expected returns vector is drawn, where $d_{\mu}, d_{\Omega}$ are the distributions of the vector of expected returns  and covariance matrix. These distributions will be addressed later.
+
+\begin{equation}
+    \mu^{(t)} \sim d_{\mu} \qquad \Omega^{(t)} \sim d_{\Omega}
+\end{equation}
+
+If $b=0$ the covariance matrix and expected returns vector is equal to the previous:
+
+\begin{equation}
+    \mu^{(t)} = \mu^{(t-1)} \qquad \Omega^{(t)} = \Omega^{(t-1)}
+\end{equation}
+
+Lastly we draw the returns just as in the regular CAPM formulation, with the caveat $\mu$ and $\Omega$ contains a top-script $t$:
+
+\begin{equation}
+    \RR^{(t)} \sim N(\mu^{(t)}, \Omega^{(t)})
+\end{equation}
+
+So in any given period the tangency portfolio can be calculated, however this tangency portfolio will change each time a structural break have occurred. The only parameter that cannot be estimated looking to the real data is $p$ the an exogenous parameter to the model.
+
+\subsection{Approach for stocking picking}
+
+In this paper Sharpe ratio is used as criteria for stock picking. Sharpe ratio is a risk adjusted measure of the performance of a portfolio, defined as:
+
+\begin{equation}
+ sr = \frac{\E[R - \bar{r}]}{\std(R)}
+\end{equation}
+
+where we have used the risk free asset as benchmark. In this paper stock picking implies selecting a single stock. This corresponds to a portfolio with all weights at 0, except a weight of 1 for the stock chosen, the choice of stock would be the stock with highest Sharpe ratio.
+
+Under the normal CAPM assumptions $\Omega$ and $\mu$ could be estimated using historical data. This is feasible in the normal CAPM formulation due to law of large numbers, that basically will ensure that as the number of observations increases, the parameter estimates will converge to the true value:
+
+\begin{equation}
+    (\hat{\mu}, \hat{\Omega}) \overset{d}{\rightarrow} (\mu, \Omega) \qquad \text{for } n \rightarrow \infty
+\end{equation}
+
+Having these summary statistics the entire period would imply that we could chose the single stock with highest Sharpe ratio for the entire period.
+
+This is however not the case under the alternative model formulation, since a structural break can occur at any time which makes it impossible to estimate $\Omega$, $\mu$ by using the entire sample of historical data. A different approach is therefore taken in this paper.
+
+Since we know the structural model underlying the problem, we are able to sample from it. Using this fact a generated dataset of arbitrary size can be made with returns and Sharpe ratios for individual stocks. We can the use this data set to train an algorithm, that maps a set of $k$ stock observations to a set of $k$ Sharpe ratios.
+
+More formally we can denote this as:
+
+\begin{equation}
+    f_{\theta}: \R^{k} \mapsto \R^{k}
+\end{equation}
+
+Where $f_{\theta}$ is the algorithm used, that has a set of parameters $\theta$.
+
+We can then establish a loss function $L$ such that:
+
+\begin{equation}
+    \hat{f_{\theta}} = \underset{\theta}{\argmin} \sum L(\mathbf{sr}^{(t)}, \hat{\mathbf{sr}}^{(t)})
+\end{equation}
+
+where $\hat{\mathbf{sr}}$ is the prediction of the weights in period $t$ returned by the  algorithm.
+
+Finally when having found the algorithm that performs the best in the simulated data set, we can take it to the real data. This approach allows three things: 1) We can train data hungry algorithms. We have approximately 7000 observations in the real data, but some algorithms (the LSTM mentioned later), needs in excess of a million observations to converge. 2) We have latent variables. Using real data we can only make estimates of $\Omega$ and $\mu$, however, when we have simulated from the underlying structural causal model, we can find the true values at any given time in the data set, allowing us to calculate the actual Sharpe ratio for each stock. 3) It is not possible to overfit the data out-of-sample. Had we trained, and tuned the models in-sample, that is used real data for these generalize out-of-sample. This is because our stock picking algorithms might have captured noise in the data, and used that to get overly optimistic estimates of the performance of our algorithms.

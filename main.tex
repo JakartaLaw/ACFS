@@ -12,6 +12,8 @@
 \usepackage[capposition=top]{floatrow}
 \usepackage{scrextend}
 \usepackage{csquotes}
+\usepackage{graphicx}
+
 
 % bibliography
 \usepackage{biblatex}
@@ -37,6 +39,7 @@
 
 \newcommand{\graph}{\mathfrak{C}}
 \newcommand{\E}{\mathbb{E}}
+\newcommand{\std}{\mathbf{std}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\G}{\mathcal{G}}
 \newcommand{\lra}{\Leftrightarrow}
@@ -83,6 +86,11 @@
 \newcommand{\ds}{\mathbf{d}}
 \newcommand{\w}{\mathbf{w}}
 
+\newcommand{\rr}{\mathbf{r}}
+\newcommand{\RR}{\mathbf{R}}
+
+\newcommand{\ones}{\mathbf{1}}
+
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
 
@@ -90,32 +98,39 @@
 \setlength{\parindent}{0em}
 \setlength{\parskip}{0.25cm}
 
-\title{Structural breaks in the data generating process \& CAPM}
-\author{Jeppe S. Johansen (pcv439)}
-\date{May 2019}
+\title{Stock Picking In an Environment of Structural Breaks}
+\author{Jeppe Søndergaard Johansen (pcv439)}
+\date{August 2019}
 
 \makeindex
 
 \begin{document}
 
-NOTE:
-
-\begin{enumerate}
-  \item Introduction (1-2 pages)
-  \item Theory section (3 pages)
-  \item Data section (3 pages)
-  \item Analysis section (6 pages)
-  \item Discussion and conclusion
-\end{enumerate}
-
 \maketitle
 
-%\input{chapters/abstract.tex}
-%\tableofcontents
+\input{chapters/abstract.tex}
+\tableofcontents
 
 \pagebreak
 
+%\input{chapters/introduction.tex}
+
 \input{chapters/data.tex}
+
+\input{chapters/model.tex}
+
+\input{chapters/simulation.tex}
+
+\input{chapters/algorithms.tex}
+
+\input{chapters/analysis.tex}
+
+\input{chapters/discusion.tex}
+
+\input{chapters/conclusion.tex}
+
+\input{chapters/appendix.tex}
+
 
 \newpage
 %\printbibliography

@@ -1,0 +1,14 @@
+\section{Discussion}
+
+\subsection{Structural Causal Models}
+
+In this paper, we have assumed that the data generating process is governed by structural breaks. As alluded to in section \ref{sec:model}, another possibility would have been to assume a data generating process that followed something akin to an AR-process. Furthermore, other variables could have been assumed to influence the DGP of the simulated returns. When training, tuning and selecting between algorithms, I believe using multiple different ``environments'' is a good idea. Maybe one algorithm will perform well under certain circumstances and poorly under other. The use of controlled environments to develop and evaluate algorithms are highly beneficial, so testing the robustness under different assumptions would be an obvious extension to the work presented in this paper.
+
+\subsection{LSTM challenges}
+
+In this paper I tried implementing an LSTM. Getting this model to converge was a greater challenge than expected. This was due to multiple obstacles. First and foremost a LSTM is extremely slow to train on a CPU. I've used my personal computer to train the model. I could expect about 1 hour of training the model for each change to the architecture. If I had had access to a GPU (Graphical Processing Unit) the training could have been done considerably faster. These are however very expensive, and was infeasible for me to get hold on for this paper. GPU should be used in any further analysis using LSTM algorithms. LSTMs are very hard to train, and no matter what i did, it performed poorly. LSTMs are known for being hard to tune, but this was more difficult, than what I had expected.
+
+\subsection{The (lack of) Feasibility of Machine Learning Models}
+
+Having had a generated data set containing the latent variables, the true Sharpe ratio for individual stock  in each period, I have found that machine learning methods in general are hard to use. I've in the experimental phase of this paper, tried multiple algorithms and setups, and they have all had a hard time fitting the data in any usable way. This insight sheds light on the dangers of creating algorithms that perform well in-sample. Going forward building machine learning systems using only historical data, should be considered a risky business, and should be subject to a very thorough validation procedure, to be sure that the algorithm does not overfit the data.
+

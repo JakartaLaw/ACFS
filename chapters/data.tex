@@ -1,1 +1,43 @@
-\section{Data}
+\section{Data} \label{sec:data}
+
+
+In this paper I've selected 11 differenct stocks, to run my analysis on. The companies are:
+\textit{Apple, General Electric, Boeing, Walmart, Coca Cola, JP Morgan Chase, Chevron, Cardinal Health, Exxon Mobile, IBM, Intel}. The companies have been chosen because they represent different sectors of the economy, and all of them have been going concerns for +30 years. The data covers the period: January 1990 to June 2019. The data consists of daily the Adjusted Close price. The data is acquired using a public API provided by \textit{Quandle}.
+
+\begin{table}[ht]
+\centering
+\caption{Summary statistics of all 11 stocks}
+\input{tables/describe.tex}
+\label{tab:rawdata}
+\end{table}
+
+Table \ref{tab:rawdata} shows summary statistics of the raw data. On average 7114 observations is present for the total time period of 30 years. Figure \ref{fig:historicaltraces} presents all 11 traces. From this figure we can quickly deduce that the timeseries does not show stationarity, and in the long run follows an upward trend. For the analysis carried out in this paper, a transformation of the data is therefore necessary.
+Instead of investigating stock prices, the focus will be on daily percentage change in stock prices. The summary statistics of this is shown in figure \ref{tab:cleandata}. Where the count of this now cleansed data is 7113. Additional to finding the percentage change of daily stock prices, rows containing NaN-values have been purged. In the appendix figure \ref{fig:returns_boxplots} shows the boxplot of the individual stocks expected daily return
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.45]{figures/historicaltraces.png}
+\caption{Historical trace plots of all 11 stocks}
+\label{fig:historicaltraces}
+\end{figure}
+
+\begin{table}[ht]
+\centering
+\caption{Summary statistics of all 11 stocks, percentage change}
+\input{tables/cleandescribe.tex}
+\label{tab:cleandata}
+\end{table}
+
+\subsection{Structural Breaks in the data}
+
+
+This paper assumes that the underlying data generating process of the stock market experiences structural breaks. To confirm this whether or not the data display structural breaks we continue with a visual inspection of the expected returns and covariances of the returns.
+
+Figure \ref{fig:structuralbreaksmeans} displays the bi-annual means of 4 stocks, these being Apple, General Electric, Boeing and Walmart. The displayed stocks are chosen randomly, and it is confirmed in the data that the same pattern is present in the other stocks. The figure shows the expected daily return on each of the stocks for a given year in the sequence: $1992, 1992, 1994, \cdots, 2018$. So for each of the calculated means, we have a one year period, where no mean is calculated. This is to avoid, that a possible structural break could be between two years an disturb the picture. This figure shows, as suspected, that the returns does not seem to adhere to the CAPM assumptions, of a single a vector of expected returns $\mu$, since this would imply that for each year each stock would have the approximately same expected return, which is not what the data displays. The same is true for the covariance matrix $\Omega$ which can be seen in the appendix figure \ref{fig:structuralbreakscovariances}.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[scale=0.45]{figures/structural_breaks_means.png}
+\caption{Bi-annual means of 4 stocks}
+\label{fig:structuralbreaksmeans}
+\end{figure}
